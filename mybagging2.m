@@ -6,7 +6,7 @@ X=data(:,1:end-1);
 y=data(:,end);
 % get number of positive samples
 a=length(find(y==1));
-B=[25 50];
+B=[10 20 30 40 50];
 % numCrossVal=10;
 [n, p] = size(data);
 folds=10;
@@ -14,8 +14,8 @@ indices=crossvalind('Kfold', n, folds);
 %partitionIndex=partitionDataIndex(data,folds);
 trainError=zeros(1,length(B));
 testError=zeros(1,length(B));
-trainErrorPerFoldperBag(fold,i)=zeros(folds,length(B));
-testErrorPerFoldperBag(fold,i)=zeros(folds,length(B));
+trainErrorPerFoldperBag=zeros(folds,length(B));
+testErrorPerFoldperBag=zeros(folds,length(B));
 timeMatrix=zeros(folds,length(B));
 for fold=1:folds
     %divide the data indexes and fetch the train and test set in such a way
@@ -31,8 +31,7 @@ for fold=1:folds
         [samples,features]=size(XTrain);
         classifiers=zeros(bagSize,10);
         for j = 1:bagSize
-            index=randperm((samples),100);
-%           index=ceil(samples*rand(ceil(0.6* samples),1));
+            index=randsample(samples,samples,true);
             XT=XTrain(index,:);
             yT=yTrain(index,:);
             % returns the classifiers (Decision Trees)
@@ -44,7 +43,6 @@ for fold=1:folds
         trainErrorPerFoldperBag(fold,i)=trainError(i);
         testErrorPerFoldperBag(fold,i)=testError(i);
         timespent=toc;
-        %fprintf('time spent for %d bag size for fold %d: %d\n',i,fold,timespent);
         timeMatrix(fold,i)=timespent;
     end;
 end
@@ -53,7 +51,17 @@ title('Error Rates vs Bag size')
 xlabel('Bag Size');
 ylabel('Error rate');
 hold on;
-plot(mean(testErrorPerFoldperBag,1));
-plot(mean(trainErrorPerFoldperBag,1))
+plot(B,mean(testErrorPerFoldperBag,1));
+plot(B,mean(trainErrorPerFoldperBag,1))
+legend('mean test error rates across k folds','mean train error rates across k folds');
+hold off;
+
+figure;
+title('Error Rates vs Bag size')
+xlabel('Bag Size');
+ylabel('Error rate');
+hold on;
+plot(B,std(testErrorPerFoldperBag,1));
+plot(B,std(trainErrorPerFoldperBag,1))
 legend('mean test error rates across k folds','mean train error rates across k folds');
 hold off;

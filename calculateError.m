@@ -29,12 +29,12 @@ for sample=1: size(X,1)
         end
     end
     % do majority voting for all the classifiers
-    votedPredLabel=mode(predictedLabel);
-%             if mean(predictedLabel)>=0
-%                 votedPredLabel=1;
-%             else
-%                 votedPredLabel=-1;
-%             end
+%     votedPredLabel=mode(predictedLabel);
+            if mean(predictedLabel)>=0
+                votedPredLabel=1;
+            else
+                votedPredLabel=-1;
+            end
     if votedPredLabel ~= y(sample)
         error=error+1;
     end

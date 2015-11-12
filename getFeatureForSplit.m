@@ -2,7 +2,7 @@ function [maxFeatureEntropy, maxSplitValue, maxFeatureIndex, maxDataLeft, maxDat
 
 %GETFEATUREFORSPLIT Summary of this function goes here
 %   Detailed explanation goes here
-% returning
+% 
 %
 %
 
@@ -10,7 +10,12 @@ function [maxFeatureEntropy, maxSplitValue, maxFeatureIndex, maxDataLeft, maxDat
 
 maxFeatureEntropy=0;
 maxFeatureIndex=0;
-maxSplitValue=0;
+maxSplitValue=-1;
+maxDataLeft=[];
+maxDataRight=[];
+maxYLeft=[];
+maxYRight=[];
+
 table=tabulate(y);
 probabilities=table(:,3)/100;
 classEntropy=-sum(probabilities.*log2(probabilities));
@@ -21,7 +26,6 @@ classEntropy=-sum(probabilities.*log2(probabilities));
 
 if level==1 && (probabilities(1)== 1)
     maxFeatureIndex=0;
-    %potential problem
     maxSplitValue=-1;
     maxFeatureEntropy=0;
     maxDataLeft=[];
@@ -36,7 +40,12 @@ elseif level ==0 || ( level==1 && probabilities(1)~= 0 )
         maxEntropy = 0;
         splitValue = 0;
         for j=1:length(A)-1
-            value=(A(j)+A(j+1))/2;
+            % if there is only 1 element in the sorted array
+            if length(A)~=1
+                value=(A(j)+A(j+1))/2;
+            else
+                value=A(j);
+            end
             [entropy, indexLeft, indexRight]=getFeatureEntropy(value,X(:,i),y);
             % neglecting if we dont have any branch on either left or right
             % side
@@ -47,12 +56,12 @@ elseif level ==0 || ( level==1 && probabilities(1)~= 0 )
             if(FeatureGain1 > maxEntropy)
                 splitValue = value;
                 maxEntropy = FeatureGain1;
-                %with all the features
-                dataLeft=X(indexLeft,:);
-                dataRight=X(indexRight,:);
+                %with all the features except i
+                dataLeft=X(indexLeft,~ismember((1:features),i));
+                dataRight=X(indexRight,~ismember((1:features),i));
                 %with the corresponding indexs
-                yRight=y(indexRight);
                 yLeft=y(indexLeft);
+                yRight=y(indexRight);
             end
         end
         if(maxEntropy > maxFeatureEntropy)
@@ -61,11 +70,9 @@ elseif level ==0 || ( level==1 && probabilities(1)~= 0 )
             maxSplitValue=splitValue;
             maxDataLeft=dataLeft;
             maxDataRight=dataRight;
-            maxYRight=yRight;
             maxYLeft=yLeft;
+            maxYRight=yRight;
         end
     end
 end
-% include test data
-% include train data
 end

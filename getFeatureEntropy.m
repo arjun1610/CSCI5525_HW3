@@ -11,19 +11,17 @@ if isempty(index1) || isempty(index2)
     index2=[];
     
 else
-    % samplesLeft=X(index1);
-    % samplesRight=X(index2);
     labelsLeft = y(index1);
     labelsRight = y(index2);
     
     positiveLabelsLeft = length(find(labelsLeft==1));
     negativeLabelsLeft = length(find(labelsLeft~=1));
+    
     positiveLabelsRight = length(find(labelsRight==1));
     negativeLabelsRight = length(find(labelsRight~=1));
     
     conditionalEntropyLeft=calculateEntropy(positiveLabelsLeft, negativeLabelsLeft);
     conditionalEntropyRight=calculateEntropy(positiveLabelsRight, negativeLabelsRight);
     totalCondEntropy=length(labelsLeft)/samples*conditionalEntropyLeft + length(labelsRight)/samples*conditionalEntropyRight;
-    
 end
 end

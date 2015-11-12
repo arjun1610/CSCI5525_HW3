@@ -8,7 +8,7 @@ end
 
 positiveFraction=positive/total;
 negativeFraction=negative/total;
-if positiveFraction~=0 && negativeFraction~=0 
+if positiveFraction~=0 && negativeFraction~=0
     value= -(positiveFraction*log2(positiveFraction)+negativeFraction*log2(negativeFraction));
 elseif positiveFraction==0 
     value= -(negativeFraction*log2(negativeFraction));

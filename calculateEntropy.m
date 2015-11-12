@@ -3,7 +3,7 @@ function value = calculateEntropy(positive, negative)
 total=positive+negative;
 if total== 0 
     value= 0;
-    return 
+    return ;
 end    
 
 positiveFraction=positive/total;

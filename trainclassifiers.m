@@ -1,63 +1,72 @@
-function [featuresInfoGain, selectedFeature]= trainclassifiers( X, y )
+function classifier = trainclassifiers( X, y)
 
 %TRAINCLASSIFIERS Summary of this function goes here
 %   Detailed explanation goes here
-[samples,features]=size(X);
-classEntropy=getClassEntropy(y);
-featuresInfoGain=zeros(1,features);
-splitValues=zeros(1,features);
-maxFeatureEntropy=0;
-for i = 1 : features
-    %calculate the mean of the feature
-    
-    
-    %split on the mean
-%     mu=mean(X(:,i));
-%     [index,~]=find(X(:,i)>=mu);  
-%     positive=length(index);
-%     negative=samples-positive;
-%     
-%     positiveclass1=length(find(y(index)==1)); %positive samples class1 
-%     positiveclass2=length(find(y(index)~=1)); %positive samples class2
-%     
-%     negativeclass1=length(class1index)-positiveclass1;
-%     negativeclass2=length(class2index)-positiveclass2;
-%     
-%     conditionalEntropyLeft=calculateEntropy(positiveclass1, positiveclass2);
-%     conditionalEntropyRight=calculateEntropy(negativeclass1, negativeclass2);
-%     
-%     totalCondEntropy=positive/samples*conditionalEntropyLeft + negative/samples*conditionalEntropyRight;
-%    
-%     %first calculate the Information Gain on the first level of the
-%     %Decision tree
-%     InfGain(i)= classEntropy - totalCondEntropy;
+%first level split
+[~, splitValue0, featureIndex0, xLeft0, xRight0, yLeft0, yRight0] = getFeatureForSplit(X,y,0);
 
-%feature i for all samples 
-A=sort(X(:,i));
-maxEntropy = 0;
-splitValue = 0;
-for j=1:length(A)-1
-    value=(A(j)+A(j+1))/2;
-    entropy=getFeatureEntropy(value,X(:,i),y);
-    FeatureGain1=classEntropy-entropy;
-    if(FeatureGain1 > maxEntropy) 
-        splitValue = value;
-        maxEntropy = FeatureGain1;
+% second level split
+if ~isempty(xLeft0) && ~isempty(xRight0) 
+    % for left side
+    [~, splitValue1, featureIndex1, ~, ~, yLeft1, yRight1] = getFeatureForSplit(xLeft0(:,~ismember((1:size(xLeft0,2)),featureIndex0)), yLeft0, 1);
+    
+    % assign class labels
+    if featureIndex1 ==0
+        %set pure class labels
+        if isempty(yLeft1(yLeft1==-1))
+            labelsLeftLeft=1;
+            labelsLeftRight=1;
+        elseif isempty(yLeft1(yLeft1==1))
+            %maxLabelRight/Left
+            labelsLeftLeft=-1;
+            labelsLeftRight=-1;
+        end
+    else
+        % do majority voting by mode
+%         if length(yLeft1(yLeft1==1))>=length(yLeft1(yLeft1==-1))
+%             labelsLeftLeft=1;
+%         else
+%             labelsLeftLeft=-1;
+%         end
+%         %majority -put equals to
+%         if length(yRight1(yRight1==1))>=length(yRight1(yRight1==-1))
+%             labelsLeftRight=1;
+%         else
+%             labelsLeftRight=-1;
+%         end
+        labelsLeftLeft=mode(yLeft1);
+        labelsLeftRight=mode(yRight1);
+    end
+    
+    % for right side 
+    [~, splitValue2, featureIndex2, ~, ~, yLeft2, yRight2] = getFeatureForSplit(xRight0(:,~ismember((1:size(xRight0,2)),featureIndex0)), yRight0, 1);
+    % assign class labels 
+    if featureIndex2 == 0
+        %set pure class labels
+        if isempty(yRight2(yRight2 == -1))
+            labelsRightLeft=1;
+            labelsRightRight=1;
+        elseif isempty(yRight2(yRight2 == 1))
+            labelsRightLeft=-1;
+            labelsRightRight=-1;
+        end
+    else
+        % do majority voting by mode
+%         if length(yLeft2(yLeft2==1))>=length(yLeft2(yLeft2==-1))
+%             labelsRightLeft=1;
+%         else
+%             labelsRightLeft=-1;
+%         end
+%         %majority -put equals to
+%         if length(yRight2(yRight2==1))>=length(yRight2(yRight2==-1))
+%             labelsRightRight=1;
+%         else
+%             labelsRightRight=-1;
+%         end
+        labelsRightLeft=mode(yLeft2);
+        labelsRightRight=mode(yRight2);
     end
 end
-
-if(maxEntropy > maxFeatureEntropy)
-    maxFeatureEntropy=maxEntropy;
-    maxSplitValue=splitValue;
-end
-
-% featuresInfoGain(i)=maxEntropy;
-% splitValues(i)=splitValue;
-
-
-end
-
-% selectedFeature tells the index at which the IG was highest
-% [~,selectedFeature]=max(featuresInfoGain);
-
+% storing it in a matrix- the tree consists of the following nodes
+classifier = [featureIndex0, splitValue0, featureIndex1, splitValue1, labelsLeftLeft, labelsLeftRight, featureIndex2, splitValue2, labelsRightLeft, labelsRightRight];
 end

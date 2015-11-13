@@ -30,7 +30,7 @@ for sample=1: size(X,1)
     end
     % do majority voting for all the classifiers
 %     votedPredLabel=mode(predictedLabel);
-            if mean(predictedLabel)>=0
+            if length(predictedLabel(predictedLabel==1))> length(predictedLabel(predictedLabel~=1))
                 votedPredLabel=1;
             else
                 votedPredLabel=-1;

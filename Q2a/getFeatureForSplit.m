@@ -9,12 +9,12 @@ function [maxFeatureEntropy, maxSplitValue, maxFeatureIndex, maxDataLeft, maxDat
 [~,features]=size(X);
 
 maxFeatureEntropy=0;
-maxFeatureIndex=0;
-maxSplitValue=-1;
-maxDataLeft=[];
-maxDataRight=[];
-maxYLeft=[];
-maxYRight=[];
+% maxFeatureIndex=0;
+% maxSplitValue=-1;
+% maxDataLeft=[];
+% maxDataRight=[];
+% maxYLeft=[];
+% maxYRight=[]; 
 
 table=tabulate(y);
 probabilities=table(:,3)/100;
@@ -36,7 +36,7 @@ if level==1 && (probabilities(1)== 1)
 elseif level ==0 || ( level==1 && probabilities(1)~= 0 )
     for i = 1 : features
         %feature i for all samples
-        A=sort(X(:,i));
+        A=X(randperm(length(X(:,1))),i);
         maxEntropy = 0;
         splitValue = 0;
         for j=1:length(A)-1

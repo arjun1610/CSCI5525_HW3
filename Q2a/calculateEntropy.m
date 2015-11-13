@@ -11,8 +11,8 @@ negativeFraction=negative/total;
 if positiveFraction~=0 && negativeFraction~=0
     value= -(positiveFraction*log2(positiveFraction)+negativeFraction*log2(negativeFraction));
 elseif positiveFraction==0 
-    value= -(negativeFraction*log2(negativeFraction));
+    value= 0;
 elseif negativeFraction==0 
-    value= -(positiveFraction*log2(positiveFraction));
+    value= 0;
 end
 end

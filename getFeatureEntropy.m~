@@ -6,7 +6,7 @@ index1=find(X>=value);
 index2=find(X<value);
 samples=size(X,1);
 if isempty(index1) || isempty(index2)
-    totalCondEntropy=-1;
+    totalCondEntropy=0;
     index1=[];
     index2=[];
     

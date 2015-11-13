@@ -3,11 +3,11 @@ function classifier = trainclassifiers( X, y)
 %TRAINCLASSIFIERS Summary of this function goes here
 %   Detailed explanation goes here
 %first level split
-[~, splitValue0, featureIndex0, xLeft0, xRight0, yLeft0, yRight0] = getFeatureForSplit(X,y,0);
+[~, splitValue0, featureIndex0, xLeft0, xRight0, yLeft0, yRight0] = getFeatureForSplit(X, y, 0, 0);
 % second level split
 if ~isempty(xLeft0) && ~isempty(xRight0) 
     % for left side
-    [~, splitValue1, featureIndex1, ~, ~, yLeft1, yRight1] = getFeatureForSplit(xLeft0, yLeft0, 1);
+    [~, splitValue1, featureIndex1, ~, ~, yLeft1, yRight1] = getFeatureForSplit(xLeft0, yLeft0, featureIndex0, 1);
     % assign class labels
     if featureIndex1 ==0
         %set pure class labels
@@ -33,7 +33,7 @@ if ~isempty(xLeft0) && ~isempty(xRight0)
         end
     end
     % for right side 
-    [~, splitValue2, featureIndex2, ~, ~, yLeft2, yRight2] = getFeatureForSplit(xRight0, yRight0, 1);
+    [~, splitValue2, featureIndex2, ~, ~, yLeft2, yRight2] = getFeatureForSplit(xRight0, yRight0, featureIndex0, 1);
     % assign class labels 
     if featureIndex2 == 0
         %set pure class labels

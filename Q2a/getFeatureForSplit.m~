@@ -40,7 +40,7 @@ elseif level ==0 || ( level==1 && probabilities(1)~= 0 )
             continue;
         end
         %A=X(randperm(length(X(:,1))),i);
-        A=sort(X(:,i));
+        A=sort(X(
         maxEntropy = 0;
         splitValue = 0;
         for j=1:length(A)-1

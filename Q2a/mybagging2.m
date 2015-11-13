@@ -4,7 +4,7 @@
 data = importdata('/home/arjun/Desktop/machinelearning-hw3/ionoshpere3.txt');
 X=data(:,1:end-1);
 y=data(:,end);
-B=[10];
+B=[5 10];
 % numCrossVal=10;
 [n, p] = size(data);
 folds=10;

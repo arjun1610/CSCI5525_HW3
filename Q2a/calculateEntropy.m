@@ -1,5 +1,6 @@
 function value = calculateEntropy(positive, negative)
-
+% CALCULATEENTROPY - This function is used to calculate the entropy value
+% if we have pure populations we have zero entropy at that value
 total=positive+negative;
 if total== 0 
     value= 0;

@@ -1,20 +1,13 @@
 function [maxFeatureEntropy, maxSplitValue, maxFeatureIndex, maxDataLeft, maxDataRight, maxYLeft, maxYRight]= getFeatureForSplit( X, y, featureExclude, level )
 
-%GETFEATUREFORSPLIT Summary of this function goes here
-%   Detailed explanation goes here
-% 
-%
-%
+%GETFEATUREFORSPLIT This method is used to get the best feature by
+%calculating the information gain and returns the split value at which the
+% IG was highest. Apart from this, it also returns the two splitted
+% populations (data and labels) as left and right
 
 [~,features]=size(X);
 
 maxFeatureEntropy=0;
-% maxFeatureIndex=0;
-% maxSplitValue=-1;
-% maxDataLeft=[];
-% maxDataRight=[];
-% maxYLeft=[];
-% maxYRight=[]; 
 
 table=tabulate(y);
 probabilities=table(:,3)/100;
@@ -39,17 +32,15 @@ elseif level ==0 || ( level==1 && probabilities(1)~= 0 )
         if i==featureExclude
             continue;
         end
-        %A=X(randperm(length(X(:,1))),i);
-        A=sort(X(:,i));
+        A=unique(X(:,i));
+        % if there is only 1 unique element in the sorted array
+        if length(A)==1
+            A= repmat(A,2,1);
+        end    
         maxEntropy = 0;
         splitValue = 0;
         for j=1:length(A)-1
-            % if there is only 1 element in the sorted array
-            if length(A)~=1
-                value=(A(j)+A(j+1))/2;
-            else
-                value=A(j);
-            end
+            value=(A(j)+A(j+1))/2;
             [entropy, indexLeft, indexRight]=getFeatureEntropy(value,X(:,i),y);
             % neglecting if we dont have any branch on either left or right
             % side
@@ -60,7 +51,6 @@ elseif level ==0 || ( level==1 && probabilities(1)~= 0 )
             if(FeatureGain1 > maxEntropy)
                 splitValue = value;
                 maxEntropy = FeatureGain1;
-                %with all the features except i
                 dataLeft=X(indexLeft,:);
                 dataRight=X(indexRight,:);
                 %with the corresponding indexs

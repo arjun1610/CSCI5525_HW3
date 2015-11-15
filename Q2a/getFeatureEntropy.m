@@ -1,15 +1,13 @@
 function [totalCondEntropy, index1, index2] = getFeatureEntropy( value, X, y )
-%SPLITFEATURE Summary of this function goes here
-%   Detailed explanation goes here
+%GETFEATUREENTROPY This returns the entropy value with the given split value and
+%the data.
+%   
 
 index1=find(X>=value);
 index2=find(X<value);
 samples=size(X,1);
 if isempty(index1) || isempty(index2)
     totalCondEntropy=0;
-    index1=[];
-    index2=[];
-    
 else
     labelsLeft = y(index1);
     labelsRight = y(index2);

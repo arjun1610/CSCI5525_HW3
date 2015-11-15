@@ -1,6 +1,7 @@
 function [ errorFraction ] = calculateError( X,y, classifiers )
-%CALCULATEERROR Summary of this function goes here
-%   Detailed explanation goes here
+%CALCULATEERROR This is the function to predict and calculate the error on
+%the Test data, based on the given classifiers.
+% outputs the error rate
 error=0;
 for sample=1: size(X,1)
     predictedLabel=[];
@@ -29,7 +30,6 @@ for sample=1: size(X,1)
         end
     end
     % do majority voting for all the classifiers
-%     votedPredLabel=mode(predictedLabel);
             if length(predictedLabel(predictedLabel==1))> length(predictedLabel(predictedLabel~=1))
                 votedPredLabel=1;
             else

@@ -1,7 +1,9 @@
 function classifier = trainclassifiers( X, y)
 
-%TRAINCLASSIFIERS Summary of this function goes here
-%   Detailed explanation goes here
+%TRAINCLASSIFIERS This function returns the trained tree using the data
+% The classifiers or the tree is 2 layered binary decision tree, with
+% leaves as -1 and 1 
+
 %first level split
 [~, splitValue0, featureIndex0, xLeft0, xRight0, yLeft0, yRight0] = getFeatureForSplit(X, y, 0, 0);
 % second level split
@@ -25,7 +27,7 @@ if ~isempty(xLeft0) && ~isempty(xRight0)
         else
             labelsLeftLeft=-1;
         end
-        %majority -put equals to
+        % majority
         if length(yRight1(yRight1==1))>length(yRight1(yRight1==-1))
             labelsLeftRight=1;
         else
@@ -51,7 +53,7 @@ if ~isempty(xLeft0) && ~isempty(xRight0)
         else
             labelsRightLeft=-1;
         end
-        % greater than eq2
+
         if length(yRight2(yRight2==1))>length(yRight2(yRight2==-1))
             labelsRightRight=1;
         else

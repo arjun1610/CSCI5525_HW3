@@ -1,24 +1,19 @@
-%function [ output_args ] = myRForest2( input_args )
-%MYBAGGING2 Summary of this function goes here
-%   Detailed explanation goes here
-data = importdata('/home/arjun/Desktop/machinelearning-hw3/ionoshpere3.txt');
-X=data(:,1:end-1);
-y=data(:,end);
-M=[1 2 3 4 5];
-% numCrossVal=10;
-[n, p] = size(data);
-folds=10;
+function errorPerFoldPerFeature = myRForest2( filename, M, k )
+%MYRFOREST2  This is the main file of the Random Forest method
+%   takes the input as filename (data), M =1:34 (Features size), and K=
+%   number of folds
+% This outputs the 22*34 table with training and Test error rates with each
+% K folds and across the values of M. The last two rows are mean and
+% standard deviation of the error rates across the fold
+
+data = importdata(filename);
+[n, ~] = size(data);
+folds=k;
 indices=crossvalind('Kfold', n, folds);
-%partitionIndex=partitionDataIndex(data,folds);
-trainError=zeros(1,length(M));
-testError=zeros(1,length(M));
-trainErrorPerFoldperBag=zeros(folds,length(M));
-testErrorPerFoldperBag=zeros(folds,length(M));
-timeMatrix=zeros(folds,length(M));
+trainErrorPerFoldPerFeature=zeros(folds,length(M));
+testErrorPerFoldPerFeature=zeros(folds,length(M));
+timeMatrix=zeros(length(M),folds);
 for fold=1:folds
-    %divide the data indexes and fetch the train and test set in such a way
-    %that it takes n equal partitions and form a test set of 1 partition
-    %and a training set for remaining n-1 partitions
     XTrain = data(indices ~= fold, 1:end-1);
     yTrain = data(indices ~= fold, end);
     XTest = data(indices == fold, 1:end-1);
@@ -27,30 +22,50 @@ for fold=1:folds
     for i = 1: length(M)
         tic;
         bagSize=100;
-        [samples,features]=size(XTrain);
+        [samples,~]=size(XTrain);
         classifiers=zeros(bagSize,10);
         for j = 1:bagSize
             index=randsample(samples,samples,true);
             XT=XTrain(index,:);
             yT=yTrain(index,:);
             % returns the classifiers (Decision Trees)
-            classifiers(j,:) = trainclassifiers(XT, yT, M(i));
+            classifiers(j,:) = trainRFclassifiers(XT, yT, M(i));
         end
         % calculate the training and test errors
-        trainError=calculateError(XTrain,yTrain,classifiers);
-        testError=calculateError(XTest,yTest,classifiers);
-        trainErrorPerFoldperBag(fold,i)=trainError;
-        testErrorPerFoldperBag(fold,i)=testError;
+        trainError=calculateRError(XTrain,yTrain,classifiers);
+        testError=calculateRError(XTest,yTest,classifiers);
+        trainErrorPerFoldPerFeature(fold,i)=trainError;
+        testErrorPerFoldPerFeature(fold,i)=testError;
+        errorPerFoldPerFeature(2*fold-1,i)=trainError;
+        errorPerFoldPerFeature(2*fold,i)=testError;
         timespent=toc;
         timeMatrix(fold,i)=timespent;
     end;
 end
+%printing out the values to the terminal
+for f=1:length(M)
+    featureSize=M(f);
+    for fold=1:folds
+        fprintf('Train error for fold %d with %d random features : %f\n',fold, featureSize, errorPerFoldPerFeature(2*fold-1,f));
+        fprintf('Test error for fold %d with %d random features : %f\n',fold, featureSize, errorPerFoldPerFeature(2*fold,f));
+    end
+    fprintf('-------------------------------------------------------------\n');
+end
+%the mean and standard deviation of the train and test error rates for
+%each feature
+for feature =1: length(M)
+    errorPerFoldPerFeature(2*folds+1,feature)=mean(errorPerFoldPerFeature(:,feature));
+    errorPerFoldPerFeature(2*folds+2,feature)=std(errorPerFoldPerFeature(:,feature));
+end
+% plotting the figure
 figure;
-title('Error Rates vs Bag size')
-xlabel('Bag Size');
-ylabel('Error rate');
+title('RANDOM FOREST: Error percentages vs no. of Random Features')
+xlabel('No. of Random Features');
+ylabel('Error percentages');
 hold on;
-plot(B,mean(testErrorPerFoldperBag,1)*100);
-plot(B,mean(trainErrorPerFoldperBag,1)*100)
+plot(M,mean(testErrorPerFoldPerFeature,1)*100);
+plot(M,mean(trainErrorPerFoldPerFeature,1)*100);
 legend('mean test error rates across k folds','mean train error rates across k folds');
 hold off;
+
+end
